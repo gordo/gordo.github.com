@@ -1,18 +1,223 @@
-<!doctype html> 
+
+ctype html> 
 <html> 
-	<head> 
-		<meta charset="utf-8"> 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale:0.25, maximum-scale:1.6, user-scalable=yes;" /> 
-		<meta name="author" content="Gordon Mei" /> 
-		<title>Github Gordo</title> 
-		<style type="text/css"> 
-			* {margin:0; padding:0; font:normal 14pt "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue","Helvetica","Arial",sans-serif; font-weight:300;}
-			body {text-align:center;}	
-		</style> 
+<head> 
+	<meta charset="utf-8"> 
+	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
+	<meta name="author" content="Gordon Mei" /> 
+	<title>Github Gordo</title> 
+	<style type="text/css"> 
+		* {margin:0; padding:0; font:normal 14pt "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue","Helvetica","Arial",sans-serif; font-weight:300;}
+		body {background-color:#ddd;}
+		a:link, a:visited, a:focus, a:active {color:#009aff;}
+		a:hover {color:#ff5c80; text-decoration:line-through;}
  
-		<link rel="shortcut icon" href="../../favico.png" type="image/png" /> 
-	</head> 
-	<body>
-		gordo.github.com.	
-	</body>
+		#container {background-color:#fff; margin:auto; border:1px solid #ccc; overflow:hidden;}
+		.narrowcontainer {width:300px; height:280px;}
+		.widecontainer {width:450px; height:150px;}
+		#boxed {width:50px; height:50px; background-color:#acf; background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#666666), to(#666666), color-stop(.6,#333)); border-radius:3px; -webkit-border-radius:3px; -moz-border-radius:3px;}
+		#fauxconsole, #fauxconsoletoo, #fauxconsolethree, #incompatibilitymessage {margin:0 auto; width:300px;}
+		.narrowbars {width:300px;}
+		.widebars {width:450px;}
+		#incompatibilitymessage {margin:1em auto;}
+ 
+		#sosumi {margin:1em auto; width:300px;}
+		#sosumi a:hover {text-decoration:none; color:#abc;}
+		#sosumi, #sosumi a, #sosumi p, #sosumi p a {font-size:10pt;}
+		#sosumi p, #sosumi p a {color:#999; font-style:italic;}
+		#sosumi p {margin-top:0.3em;}
+	</style> 
+	<link rel="shortcut icon" href="http://monstercyb.org/gordon/favico.png" type="image/png" /> 
+</head> 
+<body onorientationchange="updateOrientation();"> 
+<!--
+<div id="boxed" ontouchstart="touchStart(event);"
+	ontouchmove="touchMove(event);"
+	ontouchend="touchEnd(event);"
+	ontouchcancel="touchCancel(event);">
+</div>
+--> 
+ 
+<!--
+<div id="boxedtoo" ongesturestart="gestureStart(event);"
+	ongesturechange="gestureChange(event);"
+	ongestureend="gestureEnd(event);">
+</div>
+--> 
+ 
+<div id="incompatibilitymessage" style="display:none;"> 
+This project was designed to use TouchEvent and GestureEvent in Safari DOM Extensions, and is currently designed to work with the iPhone OS.
+</div> 
+ 
+<div id="container" class="narrowcontainer"> 
+<div id="boxed"></div> 
+</div> 
+ 
+<div id="fauxconsole" class="narrowbars"> 
+Drag the cube with one finger.
+</div> 
+<div id="fauxconsoletoo" class="narrowbars"> 
+Or rotate gesture anywhere with two fingers.
+</div> 
+<div id="fauxconsolethree" class="narrowbars"> 
+</div> 
+ 
+<div id="sosumi" style="display:none;">2010. <a href="http://www.monstercyb.org/gordon/lab">Monstercyb.org</a>.<br />A part of the <a href="http://www.ocf.berkeley.edu/~gordeon">GordeonBleu</a> network.<p>TouchEvent &amp; GestureEvent in MobileSafari.</p></div> 
+ 
+<script type="text/javascript"> 
+	var container = document.getElementById("container");
+	var boxy = document.getElementById("boxed");
+	var fauxconsole = document.getElementById("fauxconsole");
+	var fauxconsoletoo = document.getElementById("fauxconsoletoo");
+	var fauxconsolethree = document.getElementById("fauxconsolethree");
+ 
+ 
+	/* Touch */
+ 
+	var startXPos;
+	var startYPos;
+	var allTouches, targetTouches, changedTouches, touch, touchesCount;
+ 
+	container.addEventListener("touchstart", touchStart, false);
+	boxy.addEventListener("touchmove", touchMove, false);
+	//container.addEventListener("touchend", touchEnd, false);
+	//container.addEventListener("touchcancel", touchCancel, false);
+ 
+ 
+	function touchStart(event) {
+		//get the location in page coordinates for a single-finger event:
+		startXPos = event.touches[0].pageX;
+		startYPos = event.touches[0].pageY;
+ 
+		boxy.style.webkitTransform = "translate(" + startXPos + "px, " + startYPos + "px)";
+ 
+		fauxconsole.innerHTML = "x: " + startXPos + ", y: " + startYPos;
+ 
+		/*
+		//get all touches on a page using the touches property as follows:
+		allTouches = event.touches;
+ 
+		//get all touches for the target element using the targetTouches property:
+		targetTouches = event.targetTouches;
+ 
+		//get all changed touches for this event using the changedTouches property:
+		changedTouches = event.changedTouches;
+		*/
+ 
+		/*
+		//specific touch
+		touch = event.touches[i];
+		*/
+ 
+		//number of touches
+		touchesCount = event.touches.length
+		fauxconsole.innerHTML = "Number of fingers on screen: " + touchesCount;
+ 
+ 
+	}
+ 
+ 
+	//to enable dragging, implement the touchmove event handler to translate the target
+	function touchMove(event) {
+		// Prevent scrolling on this element
+		// touchmove and touchstart event handlers
+		event.preventDefault();
+ 
+		curX = event.targetTouches[0].pageX - startXPos;
+		curY = event.targetTouches[0].pageY - startYPos;
+		boxy.style.webkitTransform = "translate(" + curX + "px, " + curY + "px)";
+ 
+		fauxconsoletoo.innerHTML = "x: " + event.touches[0].pageX + ", y: " + event.touches[0].pageY;
+	}
+ 
+ 
+	/* Gestures */
+ 
+	var angle;
+ 
+	container.addEventListener("gesturestart", gestureStart, false);
+	container.addEventListener("gesturechange", gestureChange, false);
+	//container.addEventListener("gestureend", gestureEnd, false);
+ 
+	function gestureStart(event) {
+		angle = event.rotation;
+ 
+		fauxconsolethree.innerHTML = angle + " degrees";
+	}
+ 
+	function gestureChange(event) {
+		// Disable browser zoom (disable pinch open and pinch close gestures)
+		// gesturestart and gesturechange event handler
+		event.preventDefault();
+ 
+		// amount of rotation since the gesture started
+		angle = event.rotation;
+ 
+		fauxconsolethree.innerHTML = angle + " degrees";
+	}
+ 
+ 
+	/*
+	function gestureEnd(event) {
+	}
+ 
+ 
+	// amount scaled since the gesture started
+	var scale = event.scale;
+ 
+	onGestureChange: function(e) {
+	    e.preventDefault();
+	    e.target.style.webkitTransform = "scale(" + e.scale  + startScale  + ") rotate(" e.rotation + startRotation + "deg)";
+	}
+	*/
+ 
+ 
+	/* Orientation */
+ 
+	updateOrientation();
+ 
+	function updateOrientation() {
+		switch(window.orientation) {
+			case 0:
+			// normal
+				container.className = "narrowcontainer";
+				fauxconsole.className = "narrowbars";
+				fauxconsoletoo.className = "narrowbars";
+				fauxconsolethree.className = "narrowbars";
+				break;
+ 
+			case -90:
+			// right
+				container.className = "widecontainer";
+				fauxconsole.className = "widebars";
+				fauxconsoletoo.className = "widebars";
+				fauxconsolethree.className = "widebars";
+				break;
+ 
+			case 90:
+			// left
+				container.className = "widecontainer";
+				fauxconsole.className = "widebars";
+				fauxconsoletoo.className = "widebars";
+				fauxconsolethree.className = "widebars";
+				break;
+		}
+	}
+ 
+ 
+	/* Show warning to non iPhone OS */
+	detectiphone();
+ 
+	function detectiphone() {
+		if (navigator.appVersion.indexOf('iPhone OS ') < 0 && navigator.appVersion.indexOf('iPad') < 0) {
+			// Is not iPhone OS
+			document.getElementById("incompatibilitymessage").style.display = "block";
+			document.getElementById("sosumi").style.display = "block";
+		}
+	}
+</script> 
+ 
+<!--Created 2010 May 4--> 
+ 
+</body> 
 </html> 
